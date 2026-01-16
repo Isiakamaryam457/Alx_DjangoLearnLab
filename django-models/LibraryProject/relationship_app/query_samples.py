@@ -16,5 +16,5 @@ books_in_library = library.books.all()
 print("Books in", library.name, ":", [book.title for book in books_in_library])
 
 # 3. Retrieve the librarian for a library
-librarian = Librarian.objects.get(name=librarian_name)
+librarian = Librarian.objects.get(library=)
 print("Librarian of", library.name, ":", librarian.name)
