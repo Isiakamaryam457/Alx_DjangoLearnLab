@@ -1,4 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
+from django.contrib.auth.decorators import permission_required
 from django.views.generic.detail import DetailView
 from django.contrib.auth import login, logout
 from django.contrib.auth.forms import UserCreationForm
@@ -8,8 +10,18 @@ from django.contrib.auth.decorators import user_passes_test
 from .models import Book 
 from .models import Library
 
+def is_admin(user):
+    return user.is_superuser or user.is_staff
+
+def is_librarian(user):
+    return user.groups.filter(name='Librarian').exists()
+
+def is_member(user):
+    return user.groups.filter(name='Member').exists()
+
+
 def list_books(request):
-    book = Book.objects.all()
+    books = Book.objects.all()
     context = {'books': books}
     return render(request, 'relationship_app/list_books.html', context)
 
@@ -44,5 +56,33 @@ def librarian_view(request):
 @user_passes_test(is_member)
 def member_view(request):
     return render(request, 'relationship_app/member_view.html')
+
+@permission_required('relationship_app.can_add_book', raise_exception=True)
+def add_book(request):
+    author, _ = Author.objects.get_or_create(name="Default Author")
+
+    Book.objects.create(
+        title="New Book Example",
+        author=author
+    )
+
+    return HttpResponse("Book added successfully")
+
+
+@permission_required('relationship_app.can_change_book', raise_exception=True)
+def edit_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    book.title = "Updated Book Title"
+    book.save()
+
+    return HttpResponse("Book updated successfully")
+
+
+@permission_required('relationship_app.can_delete_book', raise_exception=True)
+def delete_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    book.delete()
+
+    return HttpResponse("Book deleted successfully")
 
     

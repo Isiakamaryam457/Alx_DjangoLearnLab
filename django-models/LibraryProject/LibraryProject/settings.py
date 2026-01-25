@@ -39,7 +39,14 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bookshelf',
     'relationship_app',
+    
 ]
+ 
+ # Authentication settings
+LOGIN_REDIRECT_URL = '/relationship/books/'  # Where to go after login
+LOGOUT_REDIRECT_URL = '/relationship/login/'  # Where to go after logout
+LOGIN_URL = '/relationship/login/'  # Where to go if login is required
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
