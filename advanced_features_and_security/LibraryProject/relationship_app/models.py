@@ -28,7 +28,15 @@ class CustomUserManager(BaseUserManager):
             raise ValueError('Superuser must have is_superuser=True.')
 
         return self.create_user(username, email, password, **extra_fields)
+        
+class CustomUser(AbstractUser):
+    date_of_birth = models.DateField(null=True, blank=True)
+    profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
 
+    objects = CustomUserManager()
+
+    def __str__(self):
+        return self.username
 
 class Author(models.Model):
     name = models.CharField(max_length=100)
@@ -77,14 +85,7 @@ class UserProfile(models.Model):
     def __str__(self):
         return f"{self.user.username} ({self.role})"
 
-class CustomUser(AbstractUser):
-    date_of_birth = models.DateField(null=True, blank=True)
-    profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
 
-    objects = CustomUserManager()
-
-    def __str__(self):
-        return self.username
 
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_user_profile(sender, instance, created, **kwargs):
