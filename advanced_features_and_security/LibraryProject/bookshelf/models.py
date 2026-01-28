@@ -1,6 +1,7 @@
+# bookshelf/models.py
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
+from django.contrib.auth.models import AbstractUser, BaseUserManager
 
 class Book(models.Model):
     title = models.CharField(max_length=200)
@@ -19,8 +20,6 @@ class Book(models.Model):
         return self.title
 
 class CustomUserManager(BaseUserManager):
-    """Custom manager for custom user model with extra fields"""
-
     def create_user(self, username, email, password=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must be set')
@@ -34,14 +33,8 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)
-
-        if extra_fields.get('is_staff') is not True:
-            raise ValueError('Superuser must have is_staff=True.')
-        if extra_fields.get('is_superuser') is not True:
-            raise ValueError('Superuser must have is_superuser=True.')
-
         return self.create_user(username, email, password, **extra_fields)
-        
+
 class CustomUser(AbstractUser):
     date_of_birth = models.DateField(null=True, blank=True)
     profile_photo = models.ImageField(upload_to='profile_photos/', null=True, blank=True)
@@ -50,9 +43,3 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
-
-class Author(models.Model):
-    name = models.CharField(max_length=100)
-    
-    def __str__(self):
-        return self.name
