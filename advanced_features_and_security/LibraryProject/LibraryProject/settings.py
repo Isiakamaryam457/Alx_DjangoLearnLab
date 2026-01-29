@@ -25,7 +25,9 @@ SECRET_KEY = 'django-insecure---@b&nt@cy823igvf6_)l0^r!2mx1o^3&!0u@$+uy0#ngb47kk
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']  # add your domain or IP in production
+
 
 
 
@@ -136,6 +138,8 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = True
 
 # Allow your site to be preloaded in browsers' HSTS list
 SECURE_HSTS_PRELOAD = True
+# Trust X-Forwarded-Proto header from the proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 
 # CONTENT SECURITY POLICY (CSP) SETTINGS
