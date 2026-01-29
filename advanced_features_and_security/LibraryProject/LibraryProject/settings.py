@@ -114,15 +114,29 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
+# Enable browser XSS filter
 SECURE_BROWSER_XSS_FILTER = True
+# Prevent the site from being embedded in an iframe (clickjacking)
 X_FRAME_OPTIONS = "DENY"
+# Prevent MIME-type sniffing
 SECURE_CONTENT_TYPE_NOSNIFF = True
 
+# Send cookies over HTTPS only
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
+# Redirect all HTTP requests to HTTPS
 SECURE_SSL_REDIRECT = True
+
+# HTTP Strict Transport Security (HSTS) — tell browsers to only use HTTPS
+SECURE_HSTS_SECONDS = 31536000  # 1 year in seconds
+
+# Apply HSTS to all subdomains
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+
+# Allow your site to be preloaded in browsers' HSTS list
+SECURE_HSTS_PRELOAD = True
+
 
 # CONTENT SECURITY POLICY (CSP) SETTINGS
 CSP_DEFAULT_SRC = ("'self'",)   # Only allow resources from our own domain
