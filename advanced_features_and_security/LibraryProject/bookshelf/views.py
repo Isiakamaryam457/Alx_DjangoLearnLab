@@ -2,10 +2,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from .models import Book
-from .forms import SearchForm
+from .forms import ExampleForm
 
 def search_books(request):
-    form = SearchForm(request.GET)
+    form = ExampleForm(request.GET)
     if form.is_valid():
         query = form.cleaned_data['query']
         books = Book.objects.filter(title__icontains=query)
