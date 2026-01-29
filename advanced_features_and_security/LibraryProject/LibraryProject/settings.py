@@ -23,11 +23,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure---@b&nt@cy823igvf6_)l0^r!2mx1o^3&!0u@$+uy0#ngb47kk'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
-AUTH_USER_MODEL = 'bookshelf.CustomUser'
+
 
 # Also make sure MEDIA settings exist for profile photos
 MEDIA_URL = '/media/'
@@ -44,9 +44,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bookshelf',
     'relationship_app',
+    'csp',
     
 ]
  
+AUTH_USER_MODEL = 'bookshelf.CustomUser'
  # Authentication settings
 LOGIN_REDIRECT_URL = '/relationship/books/'  # Where to go after login
 LOGOUT_REDIRECT_URL = '/relationship/login/'  # Where to go after logout
@@ -61,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'csp.middleware.CSPMiddleware',
 ]
 
 ROOT_URLCONF = 'LibraryProject.urls'
@@ -112,6 +115,20 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+SECURE_BROWSER_XSS_FILTER = True
+X_FRAME_OPTIONS = "DENY"
+SECURE_CONTENT_TYPE_NOSNIFF = True
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+SECURE_SSL_REDIRECT = True
+
+# CONTENT SECURITY POLICY (CSP) SETTINGS
+CSP_DEFAULT_SRC = ("'self'",)   # Only allow resources from our own domain
+CSP_SCRIPT_SRC = ("'self'",)    # Only allow scripts from our own domain
+CSP_STYLE_SRC = ("'self'",)     # Only allow CSS/styles from our own domain
+CSP_IMG_SRC = ("'self'",)       # Only allow images from our own domain
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/

@@ -2,6 +2,17 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, permission_required
 from .models import Book
+from .forms import SearchForm
+
+def search_books(request):
+    form = SearchForm(request.GET)
+    if form.is_valid():
+        query = form.cleaned_data['query']
+        books = Book.objects.filter(title__icontains=query)
+    else:
+        books = Book.objects.none()
+
+    return render(request, 'search.html', {'books': books, 'form': form})
 
 @login_required
 @permission_required('bookshelf.can_create', raise_exception=True)
