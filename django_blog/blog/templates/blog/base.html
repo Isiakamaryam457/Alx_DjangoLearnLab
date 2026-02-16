@@ -10,13 +10,21 @@
 <body>
     <header>
         <nav>
+            <div class="nav-brand">
+                <a href="{% url 'post-list' %}">Django Blog</a>
+            </div>
             <ul>
+                <li><a href="{% url 'post-list' %}">Home</a></li>
                 {% if user.is_authenticated %}
-                    <!-- Show these links when user is logged in -->
+                    <li><a href="{% url 'post-create' %}">New Post</a></li>
                     <li><a href="{% url 'profile' %}">Profile</a></li>
-                    <li><a href="{% url 'logout' %}">Logout</a></li>
+                    <li>
+                        <form method="POST" action="{% url 'logout' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-link">Logout</button>
+                        </form>
+                    </li>
                 {% else %}
-                    <!-- Show these links when user is NOT logged in -->
                     <li><a href="{% url 'login' %}">Login</a></li>
                     <li><a href="{% url 'register' %}">Register</a></li>
                 {% endif %}
@@ -24,10 +32,21 @@
         </nav>
     </header>
 
-    <div class="content">
+    <main>
+        <!-- Display messages -->
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
         {% block content %}
         {% endblock %}
-    </div>
+    </main>
 
     <footer>
         <p>&copy; 2024 Django Blog</p>
