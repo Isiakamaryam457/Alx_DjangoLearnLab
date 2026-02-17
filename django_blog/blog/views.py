@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
@@ -215,3 +216,64 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         messages.success(self.request, 'Your comment has been deleted!')
         return super().delete(request, *args, **kwargs)
 
+from django.db.models import Q  # Add this import at the top
+
+# Add this view after your existing views
+class PostSearchView(ListView):
+    """
+    Search for posts based on title, content, or tags.
+    Uses Django's Q objects for complex queries.
+    """
+    model = Post
+    template_name = 'blog/search_results.html'
+    context_object_name = 'posts'
+    paginate_by = 5
+
+    def get_queryset(self):
+        """
+        Filter posts based on search query.
+        Searches title, content, and tags.
+        """
+        query = self.request.GET.get('q', '')  # Get search term from URL
+
+        if query:
+            return Post.objects.filter(
+                Q(title__icontains=query) |        # Search in title
+                Q(content__icontains=query) |      # Search in content
+                Q(tags__name__icontains=query)     # Search in tags
+            ).distinct()  # distinct() prevents duplicate results
+        
+        return Post.objects.none()  # Return empty if no query
+
+    def get_context_data(self, **kwargs):
+        """
+        Add search query to context so template can display it.
+        """
+        context = super().get_context_data(**kwargs)
+        context['query'] = self.request.GET.get('q', '')
+        return context
+class PostByTagView(ListView):
+    """
+    Display all posts associated with a specific tag.
+    """
+    model = Post
+    template_name = 'blog/posts_by_tag.html'
+    context_object_name = 'posts'
+    paginate_by = 5
+
+    def get_queryset(self):
+        """
+        Filter posts by tag name from URL.
+        """
+        tag_name = self.kwargs.get('tag_name', '')
+        return Post.objects.filter(
+            tags__name__icontains=tag_name
+        ).distinct()
+
+    def get_context_data(self, **kwargs):
+        """
+        Add tag name to context.
+        """
+        context = super().get_context_data(**kwargs)
+        context['tag_name'] = self.kwargs.get('tag_name', '')
+        return context

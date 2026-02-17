@@ -250,3 +250,104 @@ footer {
     color: #155724;
     border: 1px solid #c3e6cb;
 }
+
+/* Tags */
+.post-tags {
+    margin: 8px 0;
+}
+
+.tag {
+    display: inline-block;
+    background-color: #e0f0ff;
+    color: #0066cc;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 0.85em;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.tag:hover {
+    background-color: #0066cc;
+    color: white;
+    cursor: pointer;
+}
+
+/* Search Bar */
+.search-bar {
+    display: flex;
+    align-items: center;
+    margin: 0 20px;
+}
+
+.search-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 5px 0 0 5px;
+    font-size: 0.9em;
+    width: 250px;
+    outline: none;
+}
+
+.search-input:focus {
+    border-color: #007bff;
+}
+
+.btn-search {
+    padding: 8px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+}
+
+.btn-search:hover {
+    background-color: #0056b3;
+}
+
+/* Search Results */
+.search-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.results-count {
+    color: #666;
+    font-style: italic;
+    margin-bottom: 20px;
+}
+
+.no-results {
+    text-align: center;
+    padding: 40px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+}
+
+/* Tag Header */
+.tag-header {
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+/* Clickable Tags */
+.post-tags a.tag {
+    text-decoration: none;
+    display: inline-block;
+    background-color: #e0f0ff;
+    color: #0066cc;
+    padding: 3px 10px;
+    border-radius: 15px;
+    font-size: 0.85em;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    transition: background-color 0.3s;
+}
+
+.post-tags a.tag:hover {
+    background-color: #0066cc;
+    color: white;
+}

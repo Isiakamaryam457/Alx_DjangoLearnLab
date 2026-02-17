@@ -40,6 +40,15 @@
                     <small class="form-text">{{ form.content.help_text }}</small>
                 {% endif %}
             </div>
+            
+            <!-- Tags Field -->
+            <div class="form-group">
+                {{ form.tags.label_tag }}
+                {{ form.tags }}
+                {% if form.tags.help_text %}
+                    <small class="form-text">{{ form.tags.help_text }}</small>
+                {% endif %}
+            </div>
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">
