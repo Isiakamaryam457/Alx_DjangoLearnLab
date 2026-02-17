@@ -132,30 +132,37 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
 # ==================== Comment CRUD Views ====================
 
-@login_required
-def add_comment(request, pk):
+class CommentCreateView(LoginRequiredMixin, CreateView):
     """
     Allow authenticated users to add comments to a blog post.
-    pk = post primary key
     """
-    post = get_object_or_404(Post, pk=pk)
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/add_comment.html'
     
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            comment = form.save(commit=False)
-            comment.post = post
-            comment.author = request.user
-            comment.save()
-            messages.success(request, 'Your comment has been added!')
-            return redirect('post-detail', pk=post.pk)
-    else:
-        form = CommentForm()
+    def form_valid(self, form):
+        """
+        Set the post and author before saving.
+        """
+        post = get_object_or_404(Post, pk=self.kwargs['pk'])
+        form.instance.post = post
+        form.instance.author = self.request.user
+        messages.success(self.request, 'Your comment has been added!')
+        return super().form_valid(form)
     
-    return render(request, 'blog/add_comment.html', {
-        'form': form,
-        'post': post
-    })
+    def get_success_url(self):
+        """
+        Redirect to the post detail page after adding comment.
+        """
+        return reverse_lazy('post-detail', kwargs={'pk': self.kwargs['pk']})
+    
+    def get_context_data(self, **kwargs):
+        """
+        Add the post to the context for the template.
+        """
+        context = super().get_context_data(**kwargs)
+        context['post'] = get_object_or_404(Post, pk=self.kwargs['pk'])
+        return context
 
 
 class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
@@ -207,10 +214,4 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, 'Your comment has been deleted!')
         return super().delete(request, *args, **kwargs)
-
-
-
-
-   
-
 
