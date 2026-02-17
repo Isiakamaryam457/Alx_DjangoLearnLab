@@ -244,7 +244,7 @@ class PostSearchView(ListView):
         return context
 
 
-class PostByTagView(ListView):
+class PostByTagListView(ListView):
     """
     Display all posts associated with a specific tag.
     """
@@ -254,12 +254,11 @@ class PostByTagView(ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        tag_name = self.kwargs.get('tag_name', '')
-        return Post.objects.filter(
-            tags__name__icontains=tag_name
-        ).distinct()
+        tag_slug = self.kwargs.get('tag_slug')
+        return Post.objects.filter(tags__slug=tag_slug)
 
+   
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['tag_name'] = self.kwargs.get('tag_name', '')
+        context['tag_slug'] = self.kwargs.get('tag_slug', '')
         return context

@@ -26,7 +26,7 @@ urlpatterns = [
 
     # Search URLs
     path('search/', PostSearchView.as_view(), name='post-search'),
-    path('tags/<str:tag_name>/', PostByTagView.as_view(), name='posts-by-tag'),
+    path('tags/<slug:tag_slug>/', PostByTagListView.as_view(), name='posts-by-tag'),
 
 
     # Comment URLs
