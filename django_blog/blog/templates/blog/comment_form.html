@@ -1,0 +1,45 @@
+{% extends 'blog/base.html' %}
+
+{% block title %}Edit Comment{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="form-container">
+        <h1>Edit Comment</h1>
+        
+        <div class="comment-context">
+            <p><strong>On post:</strong> <a href="{% url 'post-detail' object.post.pk %}">{{ object.post.title }}</a></p>
+        </div>
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong>Please correct the errors below:</strong>
+                    <ul>
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <div class="form-group">
+                {{ form.content.label_tag }}
+                {{ form.content }}
+                {% if form.content.help_text %}
+                    <small class="form-text">{{ form.content.help_text }}</small>
+                {% endif %}
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Update Comment</button>
+                <a href="{% url 'post-detail' object.post.pk %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

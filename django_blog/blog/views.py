@@ -1,12 +1,13 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .forms import CustomUserCreationForm, UserUpdateForm, PostForm
-from .models import Post
+from django.http import HttpResponseForbidden
+from .forms import CustomUserCreationForm, UserUpdateForm, PostForm, CommentForm
+from .models import Post, Comment
 
 
 def register(request):
@@ -127,6 +128,84 @@ class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         Add success message when post is deleted.
         """
         messages.success(self.request, 'Your post has been deleted!')
+        return super().delete(request, *args, **kwargs)
+
+# ==================== Comment CRUD Views ====================
+
+@login_required
+def add_comment(request, pk):
+    """
+    Allow authenticated users to add comments to a blog post.
+    pk = post primary key
+    """
+    post = get_object_or_404(Post, pk=pk)
+    
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            comment = form.save(commit=False)
+            comment.post = post
+            comment.author = request.user
+            comment.save()
+            messages.success(request, 'Your comment has been added!')
+            return redirect('post-detail', pk=post.pk)
+    else:
+        form = CommentForm()
+    
+    return render(request, 'blog/add_comment.html', {
+        'form': form,
+        'post': post
+    })
+
+
+class CommentUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+    """
+    Allow comment authors to edit their comments.
+    """
+    model = Comment
+    form_class = CommentForm
+    template_name = 'blog/comment_form.html'
+    
+    def form_valid(self, form):
+        messages.success(self.request, 'Your comment has been updated!')
+        return super().form_valid(form)
+    
+    def test_func(self):
+        """
+        Ensure only the comment author can edit.
+        """
+        comment = self.get_object()
+        return self.request.user == comment.author
+    
+    def get_success_url(self):
+        """
+        Redirect to the post detail page after updating.
+        """
+        return reverse_lazy('post-detail', kwargs={'pk': self.object.post.pk})
+
+
+class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """
+    Allow comment authors to delete their comments.
+    """
+    model = Comment
+    template_name = 'blog/comment_confirm_delete.html'
+    
+    def test_func(self):
+        """
+        Ensure only the comment author can delete.
+        """
+        comment = self.get_object()
+        return self.request.user == comment.author
+    
+    def get_success_url(self):
+        """
+        Redirect to the post detail page after deleting.
+        """
+        return reverse_lazy('post-detail', kwargs={'pk': self.object.post.pk})
+    
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'Your comment has been deleted!')
         return super().delete(request, *args, **kwargs)
 
 
