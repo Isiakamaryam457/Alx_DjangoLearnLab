@@ -9,6 +9,7 @@ from django.urls import reverse_lazy
 from django.http import HttpResponseForbidden
 from .forms import CustomUserCreationForm, UserUpdateForm, PostForm, CommentForm
 from .models import Post, Comment
+from taggit.models import Tag
 
 
 def register(request):
@@ -216,13 +217,9 @@ class CommentDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         messages.success(self.request, 'Your comment has been deleted!')
         return super().delete(request, *args, **kwargs)
 
-from django.db.models import Q  # Add this import at the top
-
-# Add this view after your existing views
 class PostSearchView(ListView):
     """
     Search for posts based on title, content, or tags.
-    Uses Django's Q objects for complex queries.
     """
     model = Post
     template_name = 'blog/search_results.html'
@@ -230,28 +227,23 @@ class PostSearchView(ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        """
-        Filter posts based on search query.
-        Searches title, content, and tags.
-        """
-        query = self.request.GET.get('q', '')  # Get search term from URL
+        query = self.request.GET.get('q', '')
 
         if query:
             return Post.objects.filter(
-                Q(title__icontains=query) |        # Search in title
-                Q(content__icontains=query) |      # Search in content
-                Q(tags__name__icontains=query)     # Search in tags
-            ).distinct()  # distinct() prevents duplicate results
+                Q(title__icontains=query) |
+                Q(content__icontains=query) |
+                Q(tags__name__icontains=query)  # taggit uses same lookup
+            ).distinct()
         
-        return Post.objects.none()  # Return empty if no query
+        return Post.objects.none()
 
     def get_context_data(self, **kwargs):
-        """
-        Add search query to context so template can display it.
-        """
         context = super().get_context_data(**kwargs)
         context['query'] = self.request.GET.get('q', '')
         return context
+
+
 class PostByTagView(ListView):
     """
     Display all posts associated with a specific tag.
@@ -262,18 +254,12 @@ class PostByTagView(ListView):
     paginate_by = 5
 
     def get_queryset(self):
-        """
-        Filter posts by tag name from URL.
-        """
         tag_name = self.kwargs.get('tag_name', '')
         return Post.objects.filter(
             tags__name__icontains=tag_name
         ).distinct()
 
     def get_context_data(self, **kwargs):
-        """
-        Add tag name to context.
-        """
         context = super().get_context_data(**kwargs)
         context['tag_name'] = self.kwargs.get('tag_name', '')
         return context

@@ -1,19 +1,14 @@
 from django.contrib import admin
-from .models import Post, Comment, Tag  # Add Tag
-
-
-@admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
-    list_display = ('name',)
-    search_fields = ('name',)
+from .models import Post, Comment
+from taggit.models import Tag
 
 
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ('title', 'author', 'published_date', 'updated_at')
-    list_filter = ('published_date', 'author', 'tags')  # Add tags filter
+    list_filter = ('published_date', 'author') 
     search_fields = ('title', 'content')
-    filter_horizontal = ('tags',)  # Nice widget for managing tags
+   
 
 
 @admin.register(Comment)
