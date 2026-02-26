@@ -56,6 +56,8 @@ class PostViewSet(viewsets.ModelViewSet):
        # post=post
     #)
 
+    #Like.objects.get_or_create(user=request.user, post=post)"]
+
     if not created:
         return Response(
             {'detail': 'Post already liked.'},
