@@ -52,6 +52,7 @@ class PostViewSet(viewsets.ModelViewSet):
             )
 
         return Response({'detail': 'Post liked.'})
+        #"Like.objects.get_or_create(user=request.user, post=post)
 
     @action(detail=True, methods=['post'])
     def unlike(self, request, pk=None):
