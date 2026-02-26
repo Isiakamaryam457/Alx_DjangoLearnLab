@@ -1,9 +1,12 @@
 from rest_framework import viewsets, permissions, filters
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from .models import Post, Comment
+from .models import Post, Comment, Like
 from .serializers import PostSerializer, CommentSerializer
 from .permissions import IsOwnerOrReadOnly
+from django.contrib.contenttypes.models import ContentType
+from rest_framework import generics
+
 
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -43,6 +46,23 @@ class PostViewSet(viewsets.ModelViewSet):
             )
 
         return Response({'detail': 'Post liked.'})
+
+    #@action(detail=True, methods=['post'])
+    #def like(self, request, pk=None):
+   # post = generics.get_object_or_404(Post, pk=pk)
+
+   # like, created = Like.objects.get_or_create(
+      #  user=request.user,
+       # post=post
+    #)
+
+    if not created:
+        return Response(
+            {'detail': 'Post already liked.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    return Response({'detail': 'Post liked.'})
 
     @action(detail=True, methods=['post'])
     def unlike(self, request, pk=None):
